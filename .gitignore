@@ -1,0 +1,21 @@
+# Binaries and archives
+*.apk
+*.aab
+
+# Flutter & Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+
+# Android Studio / Gradle
+.gradle/
+local.properties
+*.iml
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
