@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
@@ -93,31 +94,38 @@ class _FavoriteScreenState extends State<FavoriteScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            Container(
+              color: AppTheme.primaryBackground,
+              width: double.infinity,
+              child: _buildHeader(),
+            ),
             Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: AppTheme.primaryAccent),
-                    )
-                  : _favorites.isEmpty
-                      ? _buildEmptyState()
-                      : RefreshIndicator(
-                          color: AppTheme.primaryAccent,
-                          backgroundColor: AppTheme.cardBackground,
-                          onRefresh: () => _loadFavorites(silent: true),
-                          child: ListView.separated(
-                            physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics(),
+              child: ClipRect(
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(color: AppTheme.primaryAccent),
+                      )
+                    : _favorites.isEmpty
+                        ? _buildEmptyState()
+                        : RefreshIndicator(
+                            color: AppTheme.primaryAccent,
+                            backgroundColor: AppTheme.cardBackground,
+                            onRefresh: () => _loadFavorites(silent: true),
+                            child: ListView.separated(
+                              physics: const BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics(),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                              itemCount: _favorites.length,
+                              separatorBuilder: (context, index) => const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final character = _favorites[index];
+                                return _buildDismissibleCard(character);
+                              },
                             ),
-                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                            itemCount: _favorites.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final character = _favorites[index];
-                              return _buildDismissibleCard(character);
-                            },
                           ),
-                        ),
+              ),
             ),
           ],
         ),
@@ -228,13 +236,18 @@ class _FavoriteScreenState extends State<FavoriteScreen>
               child: SizedBox(
                 width: 76,
                 height: 76,
-                child: Hero(
-                  tag: 'fav_char_${character.id}',
-                  child: SafeCharacterImage(
-                    imageUrl: character.image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: kIsWeb
+                    ? SafeCharacterImage(
+                        imageUrl: character.image,
+                        fit: BoxFit.cover,
+                      )
+                    : Hero(
+                        tag: 'fav_char_${character.id}',
+                        child: SafeCharacterImage(
+                          imageUrl: character.image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 14),

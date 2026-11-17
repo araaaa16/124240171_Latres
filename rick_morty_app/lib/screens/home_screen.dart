@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -219,11 +220,23 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTopHeader(),
-            _buildSearchBar(),
-            _buildFilterChips(),
-            const SizedBox(height: 12),
-            Expanded(child: _buildBody()),
+            Container(
+              color: AppTheme.primaryBackground,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopHeader(),
+                  _buildSearchBar(),
+                  _buildFilterChips(),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ClipRect(
+                child: _buildBody(),
+              ),
+            ),
           ],
         ),
       ),
@@ -488,6 +501,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildShimmerGrid() {
     return GridView.builder(
+      clipBehavior: Clip.hardEdge,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -609,6 +623,7 @@ class _HomeScreenState extends State<HomeScreen>
       child: GridView.builder(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
+        clipBehavior: Clip.hardEdge,
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -660,13 +675,18 @@ class _HomeScreenState extends State<HomeScreen>
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: 'character_${character.id}',
-                    child: SafeCharacterImage(
-                      imageUrl: character.image,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  kIsWeb
+                      ? SafeCharacterImage(
+                          imageUrl: character.image,
+                          fit: BoxFit.cover,
+                        )
+                      : Hero(
+                          tag: 'character_${character.id}',
+                          child: SafeCharacterImage(
+                            imageUrl: character.image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                   // Favorite Button in corner
                   Positioned(
                     top: 10,
